@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2 ERP - Панель управління</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+
+        header { background-color: #1e293b; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 24px; font-weight: 600; }
+
+        nav { display: flex; gap: 10px; }
+        .nav-btn { background: transparent; color: #94a3b8; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 6px; transition: all 0.3s; font-weight: 500; }
+        .nav-btn:hover { color: white; background-color: #334155; }
+        .nav-btn.active { color: white; background-color: #3b82f6; }
+
+        .container { max-width: 1000px; width: 100%; margin: 40px auto; padding: 0 20px; flex: 1; }
+        .route-page { display: none; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .route-page.active { display: block; animation: fadeIn 0.4s ease; }
+
+        h2 { margin-bottom: 20px; color: #0f172a; font-size: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #475569; }
+
+        input { width: 100%; max-width: 450px; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
+        input:focus { outline: none; border-color: #3b82f6; }
+
+        button[type="submit"], .action-btn { background-color: #3b82f6; color: white; border: none; padding: 10px 24px; font-size: 15px; font-weight: 500; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        button[type="submit"]:hover { background-color: #2563eb; }
+
+        .hint { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .list-container { margin-top: 25px; display: grid; gap: 12px; }
+
+        /* Красиві системні плашки повідомлень */
+        .alert-message { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 15px; font-weight: 500; display: none; animation: fadeIn 0.3s ease; }
+        .alert-success { display: block; background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { display: block; background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>K2 ERP System</h1>
+        <nav>
+            <button class="nav-btn active" data-target="route-clients">Клієнти</button>
+            <button class="nav-btn" data-target="route-items">Товари</button>
+            <button class="nav-btn" data-target="route-orders">Замовлення</button>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div id="route-clients" class="route-page active">
+            <h2>Реєстрація нового клієнта</h2>
+
+            <div id="clientAlert" class="alert-message"></div>
+
+            <form id="clientForm" style="margin-bottom: 35px;">
+                <div class="form-group">
+                    <label>Повне ім'я</label>
+                    <input type="text" id="clientName" placeholder="Наприклад: Віталій Канельський" required>
+                </div>
+                <div class="form-group">
+                    <label>Електронна пошта</label>
+                    <input type="email" id="clientEmail" placeholder="client@example.com" required>
+                </div>
+                <button type="submit">Створити клієнта</button>
+            </form>
+
+            <h2>Зареєстровані клієнти</h2>
+            <div id="clientsList" class="list-container"></div>
+        </div>
+
+        <div id="route-items" class="route-page">
+            <h2>Додавання товарів на склад</h2>
+            <div id="itemAlert" class="alert-message"></div>
+
+            <form id="itemForm">
+                <div class="form-group">
+                    <label>Назва товару</label>
+                    <input type="text" id="itemTitle" placeholder="Наприклад: Наручний годинник" required>
+                </div>
+                <div class="form-group">
+                    <label>Вартість (USD)</label>
+                    <input type="number" id="itemPrice" placeholder="0.00" step="0.01" min="0.1" required>
+                </div>
+                <button type="submit">Створити товар</button>
+            </form>
+        </div>
+
+        <div id="route-orders" class="route-page">
+            <h2>Оформлення замовлення</h2>
+            <div id="orderAlert" class="alert-message"></div>
+
+            <form id="orderForm" style="margin-bottom: 40px;">
+                <div class="form-group">
+                    <label>ID Клієнта</label>
+                    <input type="number" id="orderClientId" placeholder="Вкажіть ID, наприклад: 1" required>
+                </div>
+                <div class="form-group">
+                    <label>Список ID Товарів</label>
+                    <input type="text" id="orderItems" placeholder="Через кому, наприклад: 1, 2" required>
+                </div>
+                <button type="submit">Оформити замовлення</button>
+            </form>
+
+            <h2>Пошук замовлень клієнта</h2>
+            <div class="form-group" style="display: flex; gap: 10px; align-items: flex-end;">
+                <div style="flex: 1; max-width: 450px;">
+                    <label>Введіть ID Клієнта</label>
+                    <input type="number" id="searchClientId" placeholder="Наприклад: 1">
+                </div>
+                <button id="loadOrders" class="action-btn" style="margin-top: 0;">Знайти замовлення</button>
+            </div>
+
+            <div id="ordersList" class="list-container"></div>
+        </div>
+
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

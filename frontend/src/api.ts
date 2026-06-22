@@ -2,7 +2,7 @@ import {
   Client, ClientCreateInput,
   Item, ItemCreateInput,
   Order, OrderCreateInput
-} from './types';
+} from './types.js';
 
 class ErpApiClient {
   private baseUrl: string;
@@ -10,7 +10,11 @@ class ErpApiClient {
   constructor(baseUrl: string = '/api') {
     this.baseUrl = baseUrl;
   }
-
+  async getClients(): Promise<Client[]> {
+    const response = await fetch(`${this.baseUrl}/clients`);
+    if (!response.ok) throw await response.json();
+    return response.json();
+  }
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

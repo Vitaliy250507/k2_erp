@@ -7,7 +7,7 @@ class ClientCreateSchema(Schema):
     )
     email = fields.Email(
         required=True,
-        error="Некоректний формат email-адреси."
+        error_messages={"invalid": "Некоректний формат email-адреси."}
     )
 
 class ClientResponseSchema(Schema):
