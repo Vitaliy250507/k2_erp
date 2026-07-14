@@ -2,8 +2,13 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   server: {
+    host: true,
+    port: 5173,
     proxy: {
-      '/api': 'http://localhost:5000' // Перенаправляє запити з фронту на Flask
+      '/api': {
+        target: 'http://web:5000',
+        changeOrigin: true,
+      }
     }
   }
 });

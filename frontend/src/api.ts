@@ -5,15 +5,14 @@ import {
 } from './types.js';
 
 class ErpApiClient {
-  private baseUrl: string;
+  private baseUrl = 'http://localhost:5000/api';
 
   constructor(baseUrl: string = '/api') {
     this.baseUrl = baseUrl;
   }
   async getClients(): Promise<Client[]> {
     const response = await fetch(`${this.baseUrl}/clients`);
-    if (!response.ok) throw await response.json();
-    return response.json();
+    return this.handleResponse<Client[]>(response);
   }
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
@@ -27,14 +26,31 @@ class ErpApiClient {
   }
 
   async createClient(clientData: ClientCreateInput): Promise<Client> {
-    const res = await fetch(`${this.baseUrl}/clients`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(clientData),
-    });
-    return this.handleResponse<Client>(res);
-  }
+    const url = `${this.baseUrl}/clients`;
 
+    // 📝 Логуємо перед відправкою
+    console.log("=== [FRONTEND REQUEST] ===");
+    console.log("Sending POST to:", url);
+    console.log("Payload:", clientData);
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clientData),
+      });
+
+      // 📝 Логуємо статус відповіді
+      console.log("=== [FRONTEND RESPONSE STATUS] ===");
+      console.log("Status:", res.status, res.statusText);
+
+      return this.handleResponse<Client>(res);
+    } catch (error) {
+      console.error("=== [FRONTEND REQUEST FAILED] ===");
+      console.error("Error details:", error);
+      throw error;
+    }
+  }
 
   async createItem(itemData: ItemCreateInput): Promise<Item> {
     const res = await fetch(`${this.baseUrl}/items`, {
